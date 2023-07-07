@@ -1,15 +1,28 @@
 import React from 'react'
 import { useState, useEffect } from 'react'
 import { copy, linkIcon, loader, tick } from '../assets'
+import { useLazyGetSummaryQuery } from '../services/article'
 
 const Demo = () => {
   const [article, setArticle] = useState({
-    url:'',
-    summary:'',
+    url: "",
+    summary: "",
   });
 
+  const [getSummary, { error, isFetching }] = useLazyGetSummaryQuery();       //to know whether we have error, whether we are fetching to actually call to get the summary of an article
+
   const handleSubmit = async (e) => {
-    alert("submitted")
+    e.preventDefault();
+
+    const { data } = await getSummary ({ articleUrl: article.url });
+
+    if(data?.summary) {
+      const newArticle = { ...article, summary: data.summary };
+      
+      setArticle(newArticle);
+
+      console.log(newArticle);
+    }
   }
   return (
     <section className='mt-16 w-full max-w-xl'>
